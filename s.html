@@ -9,6 +9,7 @@
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
+            cursor: pointer;
         }
         .slide {
             width: 100%;
@@ -58,9 +59,6 @@
 <script>
     const slides = document.querySelectorAll('.slide');
     let currentIndex = 0;
-    let startY = 0;
-    let endY = 0;
-    let isTouching = false;
 
     const updateSlides = () => {
         slides.forEach((slide, index) => {
@@ -68,35 +66,23 @@
         });
     };
 
-    const handleTouchStart = (e) => {
-        isTouching = true;
-        startY = e.touches[0].clientY;
-    };
+    const handleClick = (e) => {
+        // Get the position of the click (relative to the page)
+        const clickPosition = e.clientY;
 
-    const handleTouchMove = (e) => {
-        if (!isTouching) return;
-        endY = e.touches[0].clientY;
-        // You can add any logic to prevent page scrolling or other effects during the move
-        e.preventDefault();  // Prevents page scroll during swipe
-    };
-
-    const handleTouchEnd = (e) => {
-        if (!isTouching) return;
-        endY = e.changedTouches[0].clientY;
-        if (startY > endY + 50 && currentIndex < slides.length - 1) {
-            // Swipe down to next slide
-            currentIndex++;
-        } else if (startY < endY - 50 && currentIndex > 0) {
-            // Swipe up to previous slide
+        if (clickPosition < window.innerHeight / 2 && currentIndex > 0) {
+            // Clicked on the top half, go to the previous slide
             currentIndex--;
+        } else if (clickPosition > window.innerHeight / 2 && currentIndex < slides.length - 1) {
+            // Clicked on the bottom half, go to the next slide
+            currentIndex++;
         }
-        isTouching = false;
+
         updateSlides();
     };
 
-    document.addEventListener('touchstart', handleTouchStart);
-    document.addEventListener('touchmove', handleTouchMove);
-    document.addEventListener('touchend', handleTouchEnd);
+    // Add event listener for click anywhere on the page
+    document.addEventListener('click', handleClick);
 
     // Initialize slides
     updateSlides();
@@ -104,6 +90,7 @@
 
 </body>
 </html>
+
 
 
 
