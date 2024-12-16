@@ -9,7 +9,7 @@
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
-            cursor: pointer;
+            touch-action: none;  /* 禁止默认的触摸滚动行为 */
         }
         .slide {
             width: 100%;
@@ -59,37 +59,53 @@
 <script>
     const slides = document.querySelectorAll('.slide');
     let currentIndex = 0;
+    let startY = 0;
+    let endY = 0;
 
+    // Update the slide position based on the current index
     const updateSlides = () => {
         slides.forEach((slide, index) => {
             slide.style.transform = `translateY(${(index - currentIndex) * 100}%)`;
         });
     };
 
-    const handleClick = (e) => {
-        // Get the position of the click (relative to the page)
-        const clickPosition = e.clientY;
+    // Handle the touch start event
+    const handleTouchStart = (e) => {
+        startY = e.touches[0].clientY;  // Record the initial touch position
+    };
 
-        if (clickPosition < window.innerHeight / 2 && currentIndex > 0) {
-            // Clicked on the top half, go to the previous slide
-            currentIndex--;
-        } else if (clickPosition > window.innerHeight / 2 && currentIndex < slides.length - 1) {
-            // Clicked on the bottom half, go to the next slide
+    // Handle the touch move event
+    const handleTouchMove = (e) => {
+        endY = e.touches[0].clientY;  // Record the touch position during the move
+    };
+
+    // Handle the touch end event
+    const handleTouchEnd = () => {
+        // Determine the swipe direction
+        if (startY - endY > 50 && currentIndex < slides.length - 1) {
+            // Swiped up (go to next slide)
             currentIndex++;
+        } else if (endY - startY > 50 && currentIndex > 0) {
+            // Swiped down (go to previous slide)
+            currentIndex--;
         }
 
+        // Update the slides after determining the direction
         updateSlides();
     };
 
-    // Add event listener for click anywhere on the page
-    document.addEventListener('click', handleClick);
+    // Attach event listeners for touch events
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
 
-    // Initialize slides
+    // Initialize the slides
     updateSlides();
 </script>
 
 </body>
 </html>
+
 
 
 
