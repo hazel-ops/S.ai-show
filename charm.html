@@ -38,6 +38,7 @@
         /* 动态进入的效果 */
         .text-enter {
             opacity: 0;
+            transform: translateY(20px);
             animation: fadeIn 1s forwards;  /* 动画效果 */
         }
 
@@ -53,7 +54,7 @@
             }
         }
 
-        /* 为每个幻灯片中的文字应用动画 */
+        /* 延迟不同时间的文字动画 */
         .slide1-text {
             animation-delay: 0.5s; /* 延迟显示 */
         }
@@ -67,6 +68,7 @@
         h2 {
             margin: 10px 0;
         }
+
     </style>
 </head>
 <body>
@@ -74,18 +76,18 @@
 <div id="slides">
     <!-- 第一张幻灯片，包含动态进入的文字 -->
     <div class="slide slide1">
+        <h2 id="slide1-text" class="text-enter">流行、古典、电子</h2>
         <h1>年度风格报告</h1>
-        <h2 class="slide1-text text-enter">流行、古典、电子</h2>
     </div>
     <!-- 第二张幻灯片，包含动态进入的文字 -->
     <div class="slide slide2">
-         <h1>年度专辑</h1>
-        <h2 class="slide2-text text-enter">Charm</h2>
+        <h2 id="slide2-text" class="text-enter">Charm</h2>
+        <h1>年度专辑</h1>
     </div>
     <!-- 第三张幻灯片，包含动态进入的文字 -->
     <div class="slide slide3">
+        <h2 id="slide3-text" class="text-enter">Clairo</h2>
         <h1>年度歌手</h1>
-        <h2 class="slide3-text text-enter">Clairo</h2>
     </div>
 </div>
 
@@ -99,6 +101,26 @@
     const updateSlides = () => {
         slides.forEach((slide, index) => {
             slide.style.transform = `translateY(${(index - currentIndex) * 100}%)`;
+        });
+
+        // 重置上一次幻灯片的文字动画
+        resetTextAnimations();
+
+        // 为当前幻灯片的文字添加动画
+        const currentSlide = slides[currentIndex];
+        const textElement = currentSlide.querySelector('h2');
+        if (textElement) {
+            textElement.classList.add('text-enter');
+        }
+    };
+
+    // 重置文字动画
+    const resetTextAnimations = () => {
+        slides.forEach(slide => {
+            const textElement = slide.querySelector('h2');
+            if (textElement) {
+                textElement.classList.remove('text-enter');  // 移除动画类
+            }
         });
     };
 
@@ -138,3 +160,4 @@
 
 </body>
 </html>
+
