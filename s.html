@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幻灯片邀请函</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slide {
+            height: 100vh;
+            width: 100vw;
+            background-color: #FFA726; /* 暖橙色 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            scroll-snap-align: start;
+        }
+
+        .indicator {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            animation: fadeIn 1.5s infinite;
+        }
+
+        @keyframes fadeIn {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .slide img {
+            max-width: 50%;
+            height: auto;
+            margin: 20px;
+        }
+
+        .slide h1, .slide h2, .slide p {
+            color: white;
+            margin: 0;
+            text-align: center;
+        }
+
+        .slide h1 {
+            font-size: 2.5em;
+        }
+
+        .slide h2 {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 第一页 -->
+        <div class="slide">
+            <h1>邀请函</h1>
+            <img src="flowers.png" alt="鲜花">
+            <img src="balloons.png" alt="气球">
+            <p class="indicator">⬆ 上划查看更多</p>
+        </div>
+
+        <!-- 第二页 -->
+        <div class="slide">
+            <h2>Have a Nice Day</h2>
+            <img src="icecream.png" alt="冰淇淋">
+            <img src="windmill.png" alt="风车">
+            <p class="indicator">⬆ 上划查看更多</p>
+        </div>
+
+        <!-- 第三页 -->
+        <div class="slide">
+            <h2>Good Night</h2>
+            <img src="moon.png" alt="月亮">
+        </div>
+    </div>
+</body>
+</html>
