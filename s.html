@@ -60,6 +60,7 @@
     let currentIndex = 0;
     let startY = 0;
     let endY = 0;
+    let isTouching = false;
 
     const updateSlides = () => {
         slides.forEach((slide, index) => {
@@ -68,20 +69,33 @@
     };
 
     const handleTouchStart = (e) => {
+        isTouching = true;
         startY = e.touches[0].clientY;
     };
 
+    const handleTouchMove = (e) => {
+        if (!isTouching) return;
+        endY = e.touches[0].clientY;
+        // You can add any logic to prevent page scrolling or other effects during the move
+        e.preventDefault();  // Prevents page scroll during swipe
+    };
+
     const handleTouchEnd = (e) => {
+        if (!isTouching) return;
         endY = e.changedTouches[0].clientY;
         if (startY > endY + 50 && currentIndex < slides.length - 1) {
+            // Swipe down to next slide
             currentIndex++;
         } else if (startY < endY - 50 && currentIndex > 0) {
+            // Swipe up to previous slide
             currentIndex--;
         }
+        isTouching = false;
         updateSlides();
     };
 
     document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
     document.addEventListener('touchend', handleTouchEnd);
 
     // Initialize slides
@@ -90,6 +104,7 @@
 
 </body>
 </html>
+
 
 
 
