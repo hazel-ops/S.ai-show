@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年度总结报告幻灯片</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            touch-action: none; /* 禁用默认的滚动行为 */
+        }
+        .slide {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.5s ease; /* 平滑过渡 */
+        }
+        .slide1 {
+            background-color: #FFA726; /* 浅橙色 */
+        }
+        .slide2 {
+            background-color: #8BC34A; /* 淡绿色 */
+        }
+        .slide3 {
+            background-color: #FDD835; /* 暖黄色 */
+        }
+
+        /* 动态进入的效果 */
+        .text-enter {
+            opacity: 0;
+            animation: fadeIn 1s forwards;  /* 动画效果 */
+        }
+
+        /* 定义动画效果 */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 为每个幻灯片中的文字应用动画 */
+        .slide1-text {
+            animation-delay: 0.5s; /* 延迟显示 */
+        }
+        .slide2-text {
+            animation-delay: 0.5s;
+        }
+        .slide3-text {
+            animation-delay: 0.5s;
+        }
+
+        h2 {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="slides">
+    <!-- 第一张幻灯片，包含动态进入的文字 -->
+    <div class="slide slide1">
+        <h2 class="slide1-text text-enter">流行、古典、电子</h2>
+        <h1>年度风格报告</h1>
+    </div>
+    <!-- 第二张幻灯片，包含动态进入的文字 -->
+    <div class="slide slide2">
+        <h2 class="slide2-text text-enter">Charm</h2>
+        <h1>年度专辑</h1>
+    </div>
+    <!-- 第三张幻灯片，包含动态进入的文字 -->
+    <div class="slide slide3">
+        <h2 class="slide3-text text-enter">Clairo</h2>
+        <h1>年度歌手</h1>
+    </div>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+    let startY = 0;
+    let endY = 0;
+
+    // 更新幻灯片位置
+    const updateSlides = () => {
+        slides.forEach((slide, index) => {
+            slide.style.transform = `translateY(${(index - currentIndex) * 100}%)`;
+        });
+    };
+
+    // 处理触摸开始事件
+    const handleTouchStart = (e) => {
+        startY = e.touches[0].clientY;  // 记录触摸开始的 Y 坐标
+    };
+
+    // 处理触摸移动事件
+    const handleTouchMove = (e) => {
+        endY = e.touches[0].clientY;  // 记录触摸过程中的 Y 坐标
+    };
+
+    // 处理触摸结束事件
+    const handleTouchEnd = () => {
+        // 判断是向上滑动还是向下滑动
+        if (startY - endY > 50 && currentIndex < slides.length - 1) {
+            // 向上滑动超过 50px，翻到下一页
+            currentIndex++;
+        } else if (endY - startY > 50 && currentIndex > 0) {
+            // 向下滑动超过 50px，翻到上一页
+            currentIndex--;
+        }
+
+        // 更新幻灯片显示
+        updateSlides();
+    };
+
+    // 添加触摸事件监听器
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    // 初始化幻灯片
+    updateSlides();
+</script>
+
+</body>
+</html>
