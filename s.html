@@ -16,8 +16,8 @@
             height: 100vh;
             width: 100vw;
             scroll-snap-type: y mandatory;
-            overflow-y: scroll;
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            position: relative;
         }
 
         .slide {
@@ -67,7 +67,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="sliderContainer">
         <!-- 第一页 -->
         <div class="slide">
             <h1>邀请函</h1>
@@ -90,5 +90,33 @@
             <img src="moon.png" alt="月亮">
         </div>
     </div>
+
+    <script>
+        const container = document.getElementById('sliderContainer');
+        let startY = 0;
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        container.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+
+        container.addEventListener('touchend', (e) => {
+            const endY = e.changedTouches[0].clientY;
+            const deltaY = startY - endY;
+
+            if (deltaY > 50 && currentSlide < slides.length - 1) {
+                // 上划
+                currentSlide++;
+            } else if (deltaY < -50 && currentSlide > 0) {
+                // 下划
+                currentSlide--;
+            }
+
+            container.style.transform = `translateY(-${currentSlide * 100}vh)`;
+            container.style.transition = 'transform 0.5s ease';
+        });
+    </script>
 </body>
 </html>
+
