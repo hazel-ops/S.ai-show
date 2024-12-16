@@ -3,112 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swipe Slider</title>
+    <title>Swipe Page</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
         }
 
-        .slide {
+        .container {
+            width: 100%;
             height: 100vh;
-            width: 100vw;
-            background-color: #FFA07A; /* 暖橙色 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
             position: relative;
         }
 
-        .slide h1, .slide h2 {
-            margin: 20px 0;
-            color: white;
-            text-align: center;
+        .page {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #FFB74D; /* 暖橙色 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s ease;
         }
 
-        .slide img {
-            width: 150px;
-            height: auto;
+        .page h1, .page p {
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        .page img {
+            max-width: 80%;
+            max-height: 50%;
             margin-top: 20px;
         }
 
-        .indicator {
+        .page-1 { transform: translateY(0%); }
+        .page-2 { transform: translateY(100%); }
+        .page-3 { transform: translateY(200%); }
+
+        .instruction {
             position: absolute;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
+            font-size: 1rem;
             color: white;
-            animation: bounce 1.5s infinite;
+            animation: fadeInOut 2s infinite;
         }
 
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                transform: translateX(-50%) translateY(-10px);
-            }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div id="slider-container">
-        <div class="slide">
-            <h1>邀请函</h1>
-            <img src="https://via.placeholder.com/150/FF7F50/FFFFFF?text=Flowers" alt="鲜花">
-            <img src="https://via.placeholder.com/150/FF7F50/FFFFFF?text=Balloons" alt="气球">
-            <div class="indicator">上划继续</div>
-        </div>
-        <div class="slide">
-            <h2>Have a Nice Day</h2>
-            <img src="https://via.placeholder.com/150/FF7F50/FFFFFF?text=Ice+Cream" alt="冰淇淋">
-            <img src="https://via.placeholder.com/150/FF7F50/FFFFFF?text=Windmill" alt="风车">
-            <div class="indicator">上划继续</div>
-        </div>
-        <div class="slide">
-            <h2>Good Night</h2>
-            <img src="https://via.placeholder.com/150/FF7F50/FFFFFF?text=Moon" alt="月亮">
-            <div class="indicator">上划继续</div>
-        </div>
+
+<div class="container" id="container">
+    <!-- 第一页 -->
+    <div class="page page-1">
+        <h1>邀请函</h1>
+        <img src="flower-balloon.png" alt="鲜花和气球装饰">
+        <p class="instruction">上划查看更多</p>
     </div>
 
-    <script>
-        let currentIndex = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+    <!-- 第二页 -->
+    <div class="page page-2">
+        <h1>Have a Nice Day</h1>
+        <img src="ice-cream-windmill.png" alt="冰淇淋和风车装饰">
+    </div>
 
-        const showSlide = (index) => {
-            slides.forEach((slide, i) => {
-                slide.style.transform = `translateY(${(i - index) * 100}vh)`;
-                slide.style.transition = 'transform 0.5s ease-in-out';
-            });
-        };
+    <!-- 第三页 -->
+    <div class="page page-3">
+        <h1>Good Night</h1>
+        <img src="moon.png" alt="月亮装饰">
+    </div>
+</div>
 
-        const handleSwipe = (event) => {
-            const touchEndY = event.changedTouches[0].clientY;
-            if (touchStartY > touchEndY + 50 && currentIndex < totalSlides - 1) {
-                currentIndex++;
-            } else if (touchStartY < touchEndY - 50 && currentIndex > 0) {
-                currentIndex--;
-            }
-            showSlide(currentIndex);
-        };
+<script>
+    const container = document.getElementById('container');
+    const pages = document.querySelectorAll('.page');
+    let currentIndex = 0;
+    let startY = 0;
+    let endY = 0;
 
-        let touchStartY = 0;
-        document.addEventListener('touchstart', (event) => {
-            touchStartY = event.touches[0].clientY;
+    // 监听手指按下事件
+    container.addEventListener('touchstart', (event) => {
+        startY = event.touches[0].clientY;
+    });
+
+    // 监听手指移动事件
+    container.addEventListener('touchmove', (event) => {
+        endY = event.touches[0].clientY;
+    });
+
+    // 监听手指松开事件
+    container.addEventListener('touchend', () => {
+        if (startY > endY + 50 && currentIndex < pages.length - 1) {
+            // 上划，翻到下一页
+            currentIndex++;
+        } else if (startY < endY - 50 && currentIndex > 0) {
+            // 下划，返回上一页
+            currentIndex--;
+        }
+        updatePages();
+    });
+
+    // 更新页面位置
+    function updatePages() {
+        pages.forEach((page, index) => {
+            page.style.transform = `translateY(${(index - currentIndex) * 100}%)`;
         });
+    }
+</script>
 
-        document.addEventListener('touchend', handleSwipe);
-
-        // Initialize slides position
-        showSlide(currentIndex);
-    </script>
 </body>
 </html>
+
 
 
