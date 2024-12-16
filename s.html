@@ -1,115 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>年度总结报告</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    .slide {
-      width: 100%;
-      height: 100vh;
-      position: absolute;
-      top: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      font-size: 24px;
-      color: white;
-      text-align: center;
-      transition: top 0.5s ease;
-    }
-    .slide:nth-child(1) {
-      background-color: #FFA500; /* 暖橙色 */
-    }
-    .slide:nth-child(2) {
-      background-color: #32CD32; /* 草绿色 */
-    }
-    .slide:nth-child(3) {
-      background-color: #D2B48C; /* 棕黄色 */
-    }
-    h1 {
-      margin: 20px 0 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年度总结报告幻灯片</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        .slide {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.5s ease;
+        }
+        .slide1 {
+            background-color: #FFA726; /* 暖橙色 */
+        }
+        .slide2 {
+            background-color: #8BC34A; /* 草绿色 */
+        }
+        .slide3 {
+            background-color: #D2B48C; /* 棕黄色 */
+        }
+        h1 {
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
 
-<div id="slide1" class="slide" style="top: 0;">
-  <h1>年度总结报告</h1>
-</div>
-<div id="slide2" class="slide">
-  <h1>风格报告</h1>
-</div>
-<div id="slide3" class="slide">
-  <h1>年度歌手</h1>
+<div id="slides">
+    <div class="slide slide1">
+        <h2>年度总结报告</h2>
+        <h1>播放总时长：270h</h1>
+    </div>
+    <div class="slide slide2">
+        <h2>风格报告</h2>
+        <h1>流行、古典、电子……</h1>
+    </div>
+    <div class="slide slide3">
+        <h2>年度歌手</h2>
+        <h1>Clairo</h1>
+    </div>
 </div>
 
 <script>
-  let currentSlide = 0; // 当前幻灯片索引
-  let startY = 0; // 记录触摸开始的Y值
-  const slides = document.querySelectorAll(".slide");
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+    let startY = 0;
+    let endY = 0;
 
-  // 添加内容的逻辑
-  const addContent = (index) => {
-    if (index === 1) {
-      const slide1 = document.getElementById("slide1");
-      if (!slide1.querySelector("h1 + h1")) {
-        const newContent = document.createElement("h1");
-        newContent.textContent = "播放总时长270h";
-        slide1.appendChild(newContent);
-      }
-    } else if (index === 2) {
-      const slide2 = document.getElementById("slide2");
-      if (!slide2.querySelector("h1 + h1")) {
-        const newContent = document.createElement("h1");
-        newContent.textContent = "流行、古典、电子……";
-        slide2.appendChild(newContent);
-      }
-    } else if (index === 3) {
-      const slide3 = document.getElementById("slide3");
-      if (!slide3.querySelector("h1 + h1")) {
-        const newContent = document.createElement("h1");
-        newContent.textContent = "clario";
-        slide3.appendChild(newContent);
-      }
-    }
-  };
+    const updateSlides = () => {
+        slides.forEach((slide, index) => {
+            slide.style.transform = `translateY(${(index - currentIndex) * 100}%)`;
+        });
+    };
 
-  // 处理触摸开始
-  window.addEventListener("touchstart", (e) => {
-    startY = e.touches[0].clientY;
-  });
+    const handleTouchStart = (e) => {
+        startY = e.touches[0].clientY;
+    };
 
-  // 处理触摸结束
-  window.addEventListener("touchend", (e) => {
-    const endY = e.changedTouches[0].clientY;
-    if (endY < startY - 50) {
-      // 向上滑动
-      if (currentSlide < slides.length - 1) {
-        slides[currentSlide].style.top = "-100%";
-        currentSlide++;
-        slides[currentSlide].style.top = "0";
-        addContent(currentSlide);
-      }
-    } else if (endY > startY + 50) {
-      // 向下滑动
-      if (currentSlide > 0) {
-        slides[currentSlide].style.top = "100%";
-        currentSlide--;
-        slides[currentSlide].style.top = "0";
-      }
-    }
-  });
+    const handleTouchEnd = (e) => {
+        endY = e.changedTouches[0].clientY;
+        if (startY > endY + 50 && currentIndex < slides.length - 1) {
+            currentIndex++;
+        } else if (startY < endY - 50 && currentIndex > 0) {
+            currentIndex--;
+        }
+        updateSlides();
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    // Initialize slides
+    updateSlides();
 </script>
 
 </body>
 </html>
+
 
 
 
