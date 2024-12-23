@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>2024年河北省人口地图</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>河北省交通图</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/province/hebei.js"></script>
     <style>
         #main {
@@ -17,51 +20,127 @@
         // 初始化图表
         var myChart = echarts.init(document.getElementById('main'));
 
-        // 数据
-        var populationData = [
-            {name: '石家庄市', value: 11500000},
-            {name: '唐山市', value: 7800000},
-            {name: '秦皇岛市', value: 3200000},
-            {name: '邯郸市', value: 9400000},
-            {name: '邢台市', value: 7400000},
-            {name: '保定市', value: 11400000},
-            {name: '张家口市', value: 4200000},
-            {name: '承德市', value: 3600000},
-            {name: '沧州市', value: 7600000},
-            {name: '廊坊市', value: 4500000},
-            {name: '衡水市', value: 4200000}
+        // 河北省主要城市的地理坐标
+        var geoCoordMap = {
+            "石家庄": [114.514, 38.042],
+            "唐山": [118.180, 39.630],
+            "保定": [115.482, 38.867],
+            "邯郸": [114.538, 36.625],
+            "秦皇岛": [119.600, 39.935],
+            "张家口": [114.884, 40.767],
+            "廊坊": [116.690, 39.543],
+            "承德": [117.933, 40.973],
+            "沧州": [116.838, 38.304],
+            "衡水": [115.665, 37.735]
+        };
+
+        // 城市之间的交通线路
+        var routes = [
+            [{ name: "石家庄" }, { name: "唐山" }],
+            [{ name: "石家庄" }, { name: "保定" }],
+            [{ name: "石家庄" }, { name: "邯郸" }],
+            [{ name: "石家庄" }, { name: "秦皇岛" }],
+            [{ name: "保定" }, { name: "廊坊" }],
+            [{ name: "唐山" }, { name: "承德" }],
+            [{ name: "张家口" }, { name: "石家庄" }],
+            [{ name: "沧州" }, { name: "衡水" }]
         ];
+
+        // 转换数据格式
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var fromCoord = geoCoordMap[data[i][0].name];
+                var toCoord = geoCoordMap[data[i][1].name];
+                if (fromCoord && toCoord) {
+                    res.push({
+                        fromName: data[i][0].name,
+                        toName: data[i][1].name,
+                        coords: [fromCoord, toCoord]
+                    });
+                }
+            }
+            return res;
+        };
 
         // 配置项
         var option = {
             title: {
-                text: '2024年河北省人口地图',
+                text: '河北省交通图',
                 left: 'center'
             },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params) {
-                    return params.name + ': ' + params.value + ' 人';
+                    if (params.seriesType === 'lines') {
+                        return params.data.fromName + ' → ' + params.data.toName;
+                    }
                 }
             },
-            visualMap: {
-                min: 0,
-                max: 12000000,
-                left: 'left',
-                top: 'bottom',
-                text: ['高', '低'], // 文本，默认为数值文本
-                calculable: true
+            geo: {
+                map: 'hebei',
+                roam: true, // 可平移缩放
+                label: {
+                    emphasis: {
+                        show: true
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        areaColor: '#cccccc',
+                        borderColor: '#111'
+                    },
+                    emphasis: {
+                        areaColor: '#ffcc99'
+                    }
+                }
             },
             series: [
                 {
-                    name: '河北省地图',
-                    type: 'map',
-                    mapType: '河北', // 使用河北省地图
-                    roam: true, // 是否开启鼠标缩放和平移漫游
-                    label: {
-                        show: true
+                    name: '交通线路',
+                    type: 'lines',
+                    coordinateSystem: 'geo',
+                    zlevel: 2,
+                    effect: {
+                        show: true,
+                        symbol: 'arrow',
+                        symbolSize: 6,
+                        color: 'red'
                     },
-                    data: populationData
+                    lineStyle: {
+                        normal: {
+                            color: '#ffa022',
+                            width: 2,
+                            opacity: 0.6,
+                            curveness: 0.2
+                        }
+                    },
+                    data: convertData(routes)
+                },
+                {
+                    name: '城市',
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    data: Object.keys(geoCoordMap).map(function (city) {
+                        return {
+                            name: city,
+                            value: geoCoordMap[city]
+                        };
+                    }),
+                    symbolSize: 8,
+                    showEffectOn: 'render',
+                    rippleEffect: {
+                        brushType: 'stroke'
+                    },
+                    hoverAnimation: true,
+                    itemStyle: {
+                        normal: {
+                            color: '#f4e925',
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    },
+                    zlevel: 1
                 }
             ]
         };
@@ -71,3 +150,4 @@
     </script>
 </body>
 </html>
+
