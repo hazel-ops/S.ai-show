@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>D3.js Line Chart Example</title>
+  <title>Zhao Liying Weighted Degree Line Chart</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
@@ -31,37 +31,38 @@
       stroke: steelblue;
       stroke-width: 2;
     }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Simple D3.js Line Chart</h1>
+  <h1>Zhao Liying Weighted Degree Line Chart</h1>
   <div id="chart"></div>
 
   <script>
-    // Set the dimensions for the chart
-    const width = 600;
+    // Set chart dimensions
+    const width = 700;
     const height = 400;
-    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    const margin = { top: 50, right: 50, bottom: 50, left: 70 };
 
-    // Sample data for the line chart (x: days, y: values)
+    // Data: X represents year range, Y represents values
     const data = [
-      { x: 1, y: 30 },
-      { x: 2, y: 80 },
-      { x: 3, y: 45 },
-      { x: 4, y: 60 },
-      { x: 5, y: 20 },
-      { x: 6, y: 90 },
-      { x: 7, y: 50 }
+      { x: "2010-2014", y: 8 },
+      { x: "2015-2019", y: 16 },
+      { x: "2020-2024", y: 8 }
     ];
 
     // Create scales
-    const xScale = d3.scaleLinear()
-                     .domain([1, d3.max(data, d => d.x)]) // x domain based on data
-                     .range([margin.left, width - margin.right]); // x range fits inside chart area
+    const xScale = d3.scalePoint()
+                     .domain(data.map(d => d.x)) // Use year ranges as domain
+                     .range([margin.left, width - margin.right]); // Fit within chart area
 
     const yScale = d3.scaleLinear()
-                     .domain([0, d3.max(data, d => d.y)]) // y domain based on data
-                     .range([height - margin.bottom, margin.top]); // y range from bottom to top
+                     .domain([0, d3.max(data, d => d.y) + 5]) // Add padding to Y scale
+                     .range([height - margin.bottom, margin.top]); // Fit Y values top to bottom
 
     // Create SVG container
     const svg = d3.select("#chart")
@@ -70,33 +71,53 @@
                   .attr("height", height);
 
     // Create axes
-    const xAxis = d3.axisBottom(xScale).ticks(7);
+    const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    // Append x-axis
+    // Append X-axis
     svg.append("g")
        .attr("transform", `translate(0,${height - margin.bottom})`) // Move to bottom
        .call(xAxis)
        .attr("class", "axis");
 
-    // Append y-axis
+    // Append Y-axis
     svg.append("g")
        .attr("transform", `translate(${margin.left},0)`) // Move to left
        .call(yAxis)
        .attr("class", "axis");
 
-    // Create the line generator function
+    // Add Y-axis label
+    svg.append("text")
+       .attr("x", -(height / 2))
+       .attr("y", margin.left / 3)
+       .attr("transform", "rotate(-90)")
+       .attr("text-anchor", "middle")
+       .style("font-size", "12px")
+       .text("Value");
+
+    // Add X-axis label
+    svg.append("text")
+       .attr("x", width / 2)
+       .attr("y", height - margin.bottom / 3)
+       .attr("text-anchor", "middle")
+       .style("font-size", "12px")
+       .text("Year Range");
+
+    // Line generator function
     const line = d3.line()
-                   .x(d => xScale(d.x))
-                   .y(d => yScale(d.y));
+                   .x(d => xScale(d.x)) // Map X values
+                   .y(d => yScale(d.y)); // Map Y values
 
     // Append the line path
     svg.append("path")
        .datum(data) // Bind data
        .attr("class", "line")
-       .attr("d", line); // Generate path
+       .attr("d", line) // Generate line path
+       .style("fill", "none")
+       .style("stroke", "steelblue")
+       .style("stroke-width", 2);
 
-    // Append dots for each data point
+    // Add data points as dots
     svg.selectAll(".dot")
        .data(data)
        .enter()
@@ -104,20 +125,23 @@
        .attr("class", "dot")
        .attr("cx", d => xScale(d.x))
        .attr("cy", d => yScale(d.y))
-       .attr("r", 5) // Radius of the dot
-       .on("mouseover", function(event, d) {
-          // Show value on hover
-          d3.select(this)
-            .attr("r", 8) // Enlarge dot
-            .attr("fill", "red");
-       })
-       .on("mouseout", function(event, d) {
-          // Reset dot
-          d3.select(this)
-            .attr("r", 5)
-            .attr("fill", "orange");
-       });
+       .attr("r", 5)
+       .style("fill", "orange")
+       .style("stroke", "steelblue")
+       .style("stroke-width", 2);
+
+    // Add text labels to the data points
+    svg.selectAll(".label")
+       .data(data)
+       .enter()
+       .append("text")
+       .attr("class", "label")
+       .attr("x", d => xScale(d.x))
+       .attr("y", d => yScale(d.y) - 10) // Position above the dot
+       .attr("text-anchor", "middle")
+       .style("font-size", "12px")
+       .style("fill", "black")
+       .text(d => d.y);
   </script>
 </body>
 </html>
-
